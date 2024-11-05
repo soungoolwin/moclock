@@ -110,8 +110,15 @@
           </div>
         </div>
       </div>
+
+      <!-- Last Updated Time -->
+      <div class="mt-8 text-center text-sm text-gray-500">
+        <p v-if="lastUpdated">Rate Last updated: {{ formattedLastUpdated }}</p>
+        <p v-else>Loading update time...</p>
+      </div>
     </div>
   </main>
+
   <!-- Vision Mission Section -->
   <div class="container mx-auto mt-[80px] mb-[60px] flex justify-center">
     <hr class="w-1/2 border-t-4 border-teal-500" />
@@ -138,11 +145,13 @@
 
 <script>
 import { ref, computed, defineComponent } from "vue";
+import { onMounted, onUnmounted } from "vue";
+import { db } from "../../firebaseConfig";
+import { doc, onSnapshot } from "firebase/firestore";
 
 export default defineComponent({
   name: "HomeView",
-  emits: ["update-rates"],
-  setup(props, { emit }) {
+  setup() {
     const isBuying = ref(true);
     const kyatAmount = ref(0);
     const bahtAmount = ref(0);
@@ -150,17 +159,67 @@ export default defineComponent({
     const kyatNeeded = ref(0);
     const bahtToKyatResult = ref(0);
     const bahtNeeded = ref(0);
-    const buyingRate = ref(800);
-    const sellingRate = ref(810);
+    const buyingRate = ref("");
+    const sellingRate = ref("");
+    const lastUpdated = ref("");
+
+    let buyingRateUnsubscribe;
+    let sellingRateUnsubscribe;
+
+    onMounted(() => {
+      try {
+        // Set up a real-time listener for the buying rate
+        buyingRateUnsubscribe = onSnapshot(
+          doc(db, "exchangeRates", "buyingRate"),
+          (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              buyingRate.value = docSnapshot.data().rate;
+              lastUpdated.value = docSnapshot.data().lastUpdated?.toDate();
+            }
+          }
+        );
+
+        // Set up a real-time listener for the selling rate
+        sellingRateUnsubscribe = onSnapshot(
+          doc(db, "exchangeRates", "sellingRate"),
+          (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              sellingRate.value = docSnapshot.data().rate;
+              lastUpdated.value = docSnapshot.data().lastUpdated?.toDate();
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error setting up real-time listeners:", error);
+      }
+    });
+
+    onUnmounted(() => {
+      // Clean up the listeners when the component is unmounted
+      if (buyingRateUnsubscribe) {
+        buyingRateUnsubscribe();
+      }
+      if (sellingRateUnsubscribe) {
+        sellingRateUnsubscribe();
+      }
+    });
+
+    const formattedLastUpdated = computed(() => {
+      if (lastUpdated.value) {
+        return new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(lastUpdated.value);
+      }
+      return "";
+    });
 
     const formatNumber = (value) => {
       return Number(value).toLocaleString();
     };
-
-    emit("update-rates", {
-      buyingRate: buyingRate.value,
-      sellingRate: sellingRate.value,
-    });
 
     const toggleMode = (mode) => {
       isBuying.value = mode === "buying";
@@ -247,6 +306,7 @@ export default defineComponent({
       bahtNeeded,
       buyingRate,
       sellingRate,
+      lastUpdated,
       toggleMode,
       handleKyatInput,
       handleBahtInput,
@@ -256,6 +316,7 @@ export default defineComponent({
       formattedKyatNeeded,
       formattedBahtToKyatResult,
       formattedBahtNeeded,
+      formattedLastUpdated,
       resetFields,
     };
   },

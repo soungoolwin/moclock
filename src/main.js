@@ -2,6 +2,17 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import "./index.css";
+import { auth } from "../firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is logged in
+    console.log("User is logged in:", user.email);
+  } else {
+    // User is not logged in
+    console.log("User is not logged in");
+  }
+});
 
 // Import Font Awesome
 import { library } from "@fortawesome/fontawesome-svg-core";

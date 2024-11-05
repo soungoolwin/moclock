@@ -13,26 +13,30 @@
     </div>
   </nav>
   <div class="bg-teal-500 text-white py-4 text-center font-bold text-xl">
-    Current Exchange Rate: 1 THB =
-    {{ Math.floor(100000 / rates.buyingRate) }} MMK | 1 MMK =
-    {{ (rates.sellingRate / 100000).toFixed(4) }} THB
+    <div v-if="rates.buyingRate && rates.sellingRate">
+      Current Exchange Rate: 1 THB =
+      {{ Math.floor(100000 / rates.buyingRate) }} MMK | 1 MMK =
+      {{ (rates.sellingRate / 100000).toFixed(4) }} THB
+    </div>
+    <div v-else>Loading exchange rates...</div>
   </div>
 
-  <router-view @update-rates="updateRates" />
+  <router-view />
 
   <!-- Footer -->
   <footer class="bg-teal-600 p-4 mt-10">
     <div class="container mx-auto text-center text-sm">
+      <!-- First Row: Social Media Icons -->
       <div class="flex justify-center space-x-6 mb-4">
         <a
-          href="https://facebook.com"
+          href="https://www.facebook.com/aung.w.phyo.1253236?mibextid=LQQJ4d"
           target="_blank"
           class="text-white hover:text-teal-300"
         >
           <font-awesome-icon :icon="['fab', 'facebook']" size="2x" />
         </a>
         <a
-          href="viber://chat?number=%2B1234567890"
+          href="https://invite.viber.com/?g2=AQAv2M9niIfQvVOXJdYZqZpFxCgu2JwvrOtkqR0vcXuMrasOSB2xxI%2Bx9eApQ9Vf&fbclid=IwZXh0bgNhZW0CMTEAAR2MBa9NQLvg8VZIC0HskuM9g3hP4RqVKW1Bv6NFZ1H7pYaIq6l3p9_hruE_aem_8NklqKTt6y2_ohzLql5WGw&lang=en"
           target="_blank"
           class="text-white hover:text-teal-300"
         >
@@ -45,33 +49,59 @@
         >
           <font-awesome-icon :icon="['fab', 'line']" size="2x" />
         </a>
-        <a href="tel:+1234567890" class="text-white hover:text-teal-300">
-          <font-awesome-icon :icon="['fas', 'phone']" size="2x" />
-        </a>
       </div>
-      &copy; 2024 Currency Exchange. All rights reserved.
+
+      <!-- Second Row: Phone Icon and Number -->
+      <div class="mb-4">
+        <div class="flex items-center justify-center">
+          <font-awesome-icon
+            :icon="['fas', 'phone']"
+            size="2x"
+            class="mr-2 text-white"
+          />
+          <span class="text-white font-bold">+66 0818186782</span>
+        </div>
+      </div>
+
+      <!-- Third Row: Copyright Text -->
+      <div>&copy; 2024 Currency Exchange. All rights reserved.</div>
     </div>
   </footer>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { db } from "../firebaseConfig";
+import { doc, onSnapshot } from "firebase/firestore";
 
 export default {
   name: "App",
   setup() {
     const rates = ref({
-      buyingRate: 751,
-      sellingRate: 760,
+      buyingRate: null,
+      sellingRate: null,
     });
 
-    const updateRates = (newRates) => {
-      rates.value = newRates;
-    };
+    onMounted(() => {
+      // Real-time listener for buying rate
+      const buyingRateDocRef = doc(db, "exchangeRates", "buyingRate");
+      onSnapshot(buyingRateDocRef, (doc) => {
+        if (doc.exists()) {
+          rates.value.buyingRate = doc.data().rate;
+        }
+      });
+
+      // Real-time listener for selling rate
+      const sellingRateDocRef = doc(db, "exchangeRates", "sellingRate");
+      onSnapshot(sellingRateDocRef, (doc) => {
+        if (doc.exists()) {
+          rates.value.sellingRate = doc.data().rate;
+        }
+      });
+    });
 
     return {
       rates,
-      updateRates,
     };
   },
 };

@@ -14,9 +14,9 @@
   </nav>
   <div class="bg-teal-500 text-white py-4 text-center font-bold text-xl">
     <div v-if="rates.buyingRate && rates.sellingRate">
-      Current Exchange Rate: 1 THB =
-      {{ Math.floor(100000 / rates.buyingRate) }} MMK | 1 MMK =
-      {{ (rates.sellingRate / 100000).toFixed(4) }} THB
+      Buying Exchange Rate: 1 THB =
+      {{ (100000 / rates.buyingRate).toFixed(2) }} MMK | Selling Exchange Rate:
+      1 THB = {{ (100000 / rates.sellingRate).toFixed(2) }} MMK
     </div>
     <div v-else>Loading exchange rates...</div>
   </div>
@@ -59,7 +59,7 @@
             size="2x"
             class="mr-2 text-white"
           />
-          <span class="text-white font-bold">+66 0818186782</span>
+          <span class="text-white font-bold">+66 818186782</span>
         </div>
       </div>
 

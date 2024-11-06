@@ -36,35 +36,36 @@ const router = createRouter({
   routes,
 });
 
-let isUserChecked = false; // Flag to prevent multiple checks
+// Helper function to check if the user is an authorized admin
+async function checkIfAuthorizedAdmin(user) {
+  const q = query(
+    collection(db, "adminUsers"),
+    where("email", "==", user.email)
+  );
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
+}
 
 // Add a navigation guard to check for authentication
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 
   if (requiresAuth) {
-    // Wait until Firebase has confirmed the auth state
-    auth.onAuthStateChanged(async (user) => {
-      if (!isUserChecked) {
-        isUserChecked = true;
-        if (user) {
-          // Query the adminUsers collection for a matching email
-          const q = query(
-            collection(db, "adminUsers"),
-            where("email", "==", user.email)
-          );
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            next(); // Proceed to the admin dashboard if user is authorized
-          } else {
-            next("/"); // Redirect unauthorized users to the home page
-          }
-        } else {
-          next("/login"); // Redirect to login if not authenticated
-        }
-      }
+    // Wait for Firebase to confirm the auth state
+    const user = await new Promise((resolve) => {
+      auth.onAuthStateChanged(resolve);
     });
+
+    if (user) {
+      const isAuthorizedAdmin = await checkIfAuthorizedAdmin(user);
+      if (isAuthorizedAdmin) {
+        next(); // Proceed to the admin dashboard if user is authorized
+      } else {
+        next("/"); // Redirect unauthorized users to the home page
+      }
+    } else {
+      next("/login"); // Redirect to login if not authenticated
+    }
   } else {
     next(); // Allow access to routes that don't require authentication
   }

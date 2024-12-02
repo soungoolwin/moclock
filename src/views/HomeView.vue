@@ -127,17 +127,17 @@
     <div class="w-full md:w-1/2 p-4">
       <h2 class="text-3xl font-bold text-teal-600 mb-6">Our Vision</h2>
       <p class="mb-4 text-lg">
-        To be the leading provider of reliable and user-friendly currency
-        exchange services, making international financial transactions simple
-        and accessible for everyone.
+        To be Myanmar's most trusted platform for secure, seamless, and
+        transparent currency exchange, empowering individuals and businesses
+        with easy access to financial transactions.
       </p>
     </div>
     <div class="w-full md:w-1/2 p-4">
       <h2 class="text-3xl font-bold text-teal-600 mb-6">Our Mission</h2>
       <p class="mb-4 text-lg">
-        Our mission is to empower our customers by offering accurate, real-time
-        currency exchange rates and exceptional customer service, ensuring a
-        seamless experience for all their currency conversion needs.
+        To provide a user-friendly, reliable, and secure platform for
+        competitive currency exchange rates, ensuring convenience, transparency,
+        and excellent customer support for all users.
       </p>
     </div>
   </div>

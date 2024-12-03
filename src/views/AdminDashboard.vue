@@ -22,7 +22,8 @@
         >
         <input
           type="number"
-          v-model="buyingRate"
+          v-model.number="buyingRate"
+          step="0.01"
           required
           class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
           placeholder="Buying Rate"
@@ -34,7 +35,8 @@
         >
         <input
           type="number"
-          v-model="sellingRate"
+          v-model.number="sellingRate"
+          step="0.01"
           required
           class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
           placeholder="Selling Rate"

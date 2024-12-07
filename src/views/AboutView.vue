@@ -31,7 +31,7 @@
         </div>
         <div class="w-full md:w-1/2 p-4 flex justify-center">
           <img
-            src="https://via.placeholder.com/400"
+            src="../../public/About-us.jpg"
             alt="About Us Image"
             class="w-full max-w-sm rounded-md shadow-md"
           />

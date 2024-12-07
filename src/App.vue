@@ -1,10 +1,18 @@
 <template>
-  <nav
-    class="bg-teal-600 p-4 bg-gradient-to-r from-blue-500 text-white font-sans shadow-md"
-  >
-    <div class="container mx-auto flex justify-between items-center">
-      <div class="text-2xl font-extrabold text-white">Money O'Clock</div>
-      <div class="space-x-4">
+  <nav class="bg-teal-600 text-white px-3 pr-5">
+    <div class="container mx-auto flex items-center justify-between h-16">
+      <!-- Logo Section -->
+      <div class="flex items-center">
+        <a href="/">
+          <img
+            src="../public/MOC-02.png"
+            alt="Money O'Clock Logo"
+            class="h-[150px] w-auto object-contain"
+        /></a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="flex space-x-4">
         <router-link to="/" class="text-white font-semibold">Home</router-link>
         <router-link to="/about" class="text-white font-semibold"
           >About Us</router-link
